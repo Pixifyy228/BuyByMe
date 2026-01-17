@@ -6,33 +6,31 @@
     <title>Buy by me Shop</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: -apple-system, system-ui, sans-serif; background: #f4f4f7; padding: 15px; margin: 0; }
-        .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        body { font-family: -apple-system, sans-serif; background: #f4f4f7; padding: 15px; margin: 0; color: #333; }
+        .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .price { color: #0088cc; font-weight: bold; }
-        .btn-add { background: #0088cc; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; }
-        
+        .btn-add { background: #0088cc; color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; }
         #order-form { display: none; background: white; padding: 15px; border-radius: 12px; margin-top: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
         .submit-btn { width: 100%; background: #28a745; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; font-size: 16px; margin-top: 10px; }
     </style>
 </head>
 <body>
-
     <h2>🛍 Каталог</h2>
     <div class="card">
         <div><div>Nike Air Max</div><div class="price">120 €</div></div>
-        <button class="btn-add" onclick="addItem('Nike Air Max', 120)">➕</button>
+        <button class="btn-add" onclick="addItem('Nike Air Max', 120)">➕ Добавить</button>
     </div>
     <div class="card">
         <div><div>Yeezy Boost</div><div class="price">250 €</div></div>
-        <button class="btn-add" onclick="addItem('Yeezy Boost', 250)">➕</button>
+        <button class="btn-add" onclick="addItem('Yeezy Boost', 250)">➕ Добавить</button>
     </div>
 
     <div id="order-form">
         <h3>📍 Оформление доставки</h3>
         <input type="text" id="fio" placeholder="Ваше ФИО">
         <input type="text" id="phone" placeholder="Номер телефона">
-        <input type="text" id="address" placeholder="Город и адрес ПВЗ">
+        <input type="text" id="address" placeholder="Город и адрес ПВЗ СДЭК">
         <button class="submit-btn" onclick="sendOrder()">Оформить заказ</button>
     </div>
 
@@ -57,14 +55,9 @@
                 return;
             }
 
-            // ВАЖНО: Формируем объект-словарь, чтобы Python не ругался на индексы
             const data = {
                 "items": cart,
-                "customer": {
-                    "fio": fio,
-                    "phone": phone,
-                    "address": addr
-                }
+                "customer": { "fio": fio, "phone": phone, "address": addr }
             };
 
             tg.sendData(JSON.stringify(data));
