@@ -6,49 +6,34 @@
     <title>Buy by me Shop</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f4f4f7; padding: 15px; margin: 0; color: #333; }
-        h2 { font-size: 20px; margin-bottom: 15px; }
-        .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .name { font-weight: 600; }
+        body { font-family: -apple-system, system-ui, sans-serif; background: #f4f4f7; padding: 15px; margin: 0; }
+        .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .price { color: #0088cc; font-weight: bold; }
         .btn-add { background: #0088cc; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; }
         
-        /* Секция данных клиента */
-        #order-form { display: none; background: white; padding: 15px; border-radius: 12px; margin-top: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .input-group { margin-bottom: 12px; }
-        .input-group label { display: block; font-size: 14px; margin-bottom: 5px; color: #666; }
-        input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-        
-        .main-btn { 
-            width: 100%; background: #28a745; color: white; border: none; 
-            padding: 15px; border-radius: 12px; font-weight: bold; font-size: 16px; 
-            margin-top: 20px; cursor: pointer;
-        }
+        #order-form { display: none; background: white; padding: 15px; border-radius: 12px; margin-top: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        .submit-btn { width: 100%; background: #28a745; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; font-size: 16px; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-    <h2>🛍 Каталог товаров</h2>
+    <h2>🛍 Каталог</h2>
     <div class="card">
-        <div><div class="name">Nike Air Max</div><div class="price">120 €</div></div>
-        <button class="btn-add" onclick="addItem('Nike Air Max', 120)">➕ Добавить</button>
+        <div><div>Nike Air Max</div><div class="price">120 €</div></div>
+        <button class="btn-add" onclick="addItem('Nike Air Max', 120)">➕</button>
     </div>
     <div class="card">
-        <div><div class="name">Yeezy Boost</div><div class="price">250 €</div></div>
-        <button class="btn-add" onclick="addItem('Yeezy Boost', 250)">➕ Добавить</button>
+        <div><div>Yeezy Boost</div><div class="price">250 €</div></div>
+        <button class="btn-add" onclick="addItem('Yeezy Boost', 250)">➕</button>
     </div>
 
     <div id="order-form">
-        <h3>📍 Информация для доставки</h3>
-        <div class="input-group">
-            <label>ФИО и Телефон</label>
-            <input type="text" id="user_fio" placeholder="Иванов Иван, +7...">
-        </div>
-        <div class="input-group">
-            <label>Адрес (Город, ПВЗ СДЭК)</label>
-            <input type="text" id="user_address" placeholder="Москва, ул. Ленина 10">
-        </div>
-        <button class="main-btn" onclick="submitOrder()">Подтвердить и заказать</button>
+        <h3>📍 Оформление доставки</h3>
+        <input type="text" id="fio" placeholder="Ваше ФИО">
+        <input type="text" id="phone" placeholder="Номер телефона">
+        <input type="text" id="address" placeholder="Город и адрес ПВЗ">
+        <button class="submit-btn" onclick="sendOrder()">Оформить заказ</button>
     </div>
 
     <script>
@@ -57,30 +42,32 @@
         let cart = [];
 
         function addItem(name, price) {
-            cart.push({ name, price });
+            cart.push({ "name": name, "price": price });
             document.getElementById('order-form').style.display = 'block';
-            tg.HapticFeedback.impactOccurred('medium'); // Вибрация при добавлении
+            tg.HapticFeedback.impactOccurred('light');
         }
 
-        function submitOrder() {
-            const fio = document.getElementById('user_fio').value;
-            const addr = document.getElementById('user_address').value;
+        function sendOrder() {
+            const fio = document.getElementById('fio').value;
+            const phone = document.getElementById('phone').value;
+            const addr = document.getElementById('address').value;
 
-            if (!fio || !addr) {
-                alert("Пожалуйста, заполните все поля!");
+            if (!fio || !addr || !phone) {
+                alert("Заполните все поля!");
                 return;
             }
 
-            // Формируем единый объект данных
-            const orderData = {
-                items: cart,
-                customer: {
-                    fio: fio,
-                    address: addr
+            // ВАЖНО: Формируем объект-словарь, чтобы Python не ругался на индексы
+            const data = {
+                "items": cart,
+                "customer": {
+                    "fio": fio,
+                    "phone": phone,
+                    "address": addr
                 }
             };
 
-            tg.sendData(JSON.stringify(orderData));
+            tg.sendData(JSON.stringify(data));
             tg.close();
         }
     </script>
