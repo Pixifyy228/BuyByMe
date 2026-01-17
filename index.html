@@ -6,59 +6,62 @@
     <title>Buy by me Shop</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: -apple-system, sans-serif; background: #f4f4f7; padding: 15px; margin: 0; color: #333; }
+        body { font-family: -apple-system, sans-serif; background: #f4f4f7; padding: 15px; margin: 0; padding-bottom: 100px; }
         .card { 
-            background: white; border-radius: 12px; padding: 15px; margin-bottom: 12px; 
-            display: flex; align-items: center; /* Выравнивание элементов по центру вертикали */
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
+            background: white; border-radius: 12px; padding: 12px; margin-bottom: 10px; 
+            display: flex; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
         }
-        .product-image {
-            width: 80px; /* Размер изображения */
-            height: 80px;
-            border-radius: 8px; /* Скругление углов */
-            object-fit: cover; /* Обрезка изображения, чтобы оно заполняло контейнер */
-            margin-right: 15px; /* Отступ справа от изображения */
-        }
-        .product-details {
-            flex-grow: 1; /* Детали займут все доступное пространство */
-        }
-        .name { font-weight: bold; font-size: 16px; }
-        .price { color: #0088cc; font-weight: bold; margin-top: 4px; }
-        .btn-add { background: #0088cc; color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .product-image { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; margin-right: 12px; }
+        .product-details { flex-grow: 1; }
+        .name { font-weight: bold; font-size: 14px; }
+        .price { color: #0088cc; font-weight: bold; font-size: 14px; }
+        .btn-add { background: #0088cc; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+        /* СТИЛИ КОРЗИНЫ */
+        #cart-section { background: white; border-radius: 15px; padding: 15px; margin-top: 20px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); display: none; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #eee; }
+        .cart-item:last-child { border-bottom: none; }
+        .remove-btn { color: #ff3b30; border: none; background: none; font-weight: bold; cursor: pointer; }
         
-        #order-form { display: none; background: white; padding: 15px; border-radius: 12px; margin-top: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        h3 { font-size: 18px; color: #555; margin-bottom: 15px; }
-        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-        .submit-btn { width: 100%; background: #28a745; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; font-size: 16px; margin-top: 10px; cursor: pointer; }
+        .total-price { font-size: 18px; font-weight: bold; text-align: right; margin: 15px 0; }
+        
+        #order-form { display: none; margin-top: 20px; }
+        input { width: 100%; padding: 12px; margin: 5px 0 15px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 16px; }
+        .submit-btn { width: 100%; background: #28a745; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; font-size: 16px; cursor: pointer; }
     </style>
 </head>
 <body>
     <h2>🛍 Каталог</h2>
 
     <div class="card">
-        <img src="https://via.placeholder.com/80x80/0088cc/FFFFFF?text=NIKE" alt="Nike Air Max" class="product-image">
+        <img src="https://via.placeholder.com/80/0088cc/white?text=NIKE" class="product-image">
         <div class="product-details">
             <div class="name">Nike Air Max</div>
             <div class="price">120 €</div>
         </div>
-        <button class="btn-add" onclick="addItem('Nike Air Max', 120)">➕ Добавить</button>
+        <button class="btn-add" onclick="addToCart('Nike Air Max', 120)">➕</button>
     </div>
 
     <div class="card">
-        <img src="https://via.placeholder.com/80x80/FFD700/000000?text=YEEZY" alt="Yeezy Boost" class="product-image">
+        <img src="https://via.placeholder.com/80/FFD700/black?text=YEEZY" class="product-image">
         <div class="product-details">
             <div class="name">Yeezy Boost</div>
             <div class="price">250 €</div>
         </div>
-        <button class="btn-add" onclick="addItem('Yeezy Boost', 250)">➕ Добавить</button>
+        <button class="btn-add" onclick="addToCart('Yeezy Boost', 250)">➕</button>
     </div>
 
-    <div id="order-form">
-        <h3>📍 Оформление доставки</h3>
-        <input type="text" id="fio" placeholder="Ваше ФИО">
-        <input type="text" id="phone" placeholder="Номер телефона">
-        <input type="text" id="address" placeholder="Город и адрес ПВЗ СДЭК">
-        <button class="submit-btn" onclick="sendOrder()">Оформить заказ</button>
+    <div id="cart-section">
+        <h3>🛒 Ваша корзина</h3>
+        <div id="cart-items"></div>
+        <div class="total-price">Итого: <span id="total-sum">0</span> €</div>
+        
+        <div id="order-form">
+            <input type="text" id="fio" placeholder="Ваше ФИО">
+            <input type="text" id="phone" placeholder="Номер телефона">
+            <input type="text" id="address" placeholder="Город и ПВЗ СДЭК">
+            <button class="submit-btn" onclick="sendOrder()">Оформить заказ</button>
+        </div>
     </div>
 
     <script>
@@ -66,10 +69,44 @@
         tg.expand();
         let cart = [];
 
-        function addItem(name, price) {
-            cart.push({ "name": name, "price": price });
-            document.getElementById('order-form').style.display = 'block';
-            tg.HapticFeedback.impactOccurred('light');
+        function addToCart(name, price) {
+            cart.push({ name, price, id: Date.now() });
+            renderCart();
+            tg.HapticFeedback.impactOccurred('medium');
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(item => item.id !== id);
+            renderCart();
+            tg.HapticFeedback.notificationOccurred('success');
+        }
+
+        function renderCart() {
+            const container = document.getElementById('cart-items');
+            const section = document.getElementById('cart-section');
+            const form = document.getElementById('order-form');
+            const totalSum = document.getElementById('total-sum');
+            
+            if (cart.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
+
+            section.style.display = 'block';
+            form.style.display = 'block';
+            container.innerHTML = '';
+            
+            let total = 0;
+            cart.forEach(item => {
+                total += item.price;
+                container.innerHTML += `
+                    <div class="cart-item">
+                        <span>${item.name} - ${item.price}€</span>
+                        <button class="remove-btn" onclick="removeFromCart(${item.id})">Удалить</button>
+                    </div>
+                `;
+            });
+            totalSum.innerText = total;
         }
 
         function sendOrder() {
@@ -78,13 +115,13 @@
             const addr = document.getElementById('address').value;
 
             if (!fio || !addr || !phone) {
-                alert("Заполните все поля!");
+                alert("Заполните все данные для доставки!");
                 return;
             }
 
             const data = {
-                "items": cart,
-                "customer": { "fio": fio, "phone": phone, "address": addr }
+                items: cart,
+                customer: { fio, phone, address: addr }
             };
 
             tg.sendData(JSON.stringify(data));
