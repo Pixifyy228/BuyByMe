@@ -6,57 +6,85 @@
     <title>Buy by me Shop</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: sans-serif; background: #f4f4f4; padding: 10px; color: #333; }
-        .item { background: #fff; padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .item img { width: 60px; height: 60px; border-radius: 5px; object-fit: cover; }
-        .info { flex-grow: 1; margin-left: 15px; }
-        .price { font-weight: bold; color: #000; }
-        button { background: #0088cc; color: #fff; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; }
-        .cart-btn { position: fixed; bottom: 20px; left: 10px; right: 10px; background: #28a745; color: white; border: none; padding: 15px; border-radius: 10px; font-size: 16px; font-weight: bold; display: none; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8f9fa; margin: 0; padding: 15px; color: #212529; }
+        h2 { text-align: center; font-weight: 600; margin-bottom: 20px; }
+        .product-list { display: grid; gap: 15px; }
+        .product-card { background: #fff; border-radius: 12px; padding: 15px; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .product-info { flex-grow: 1; margin-left: 15px; }
+        .product-name { font-weight: bold; font-size: 16px; }
+        .product-price { color: #0088cc; font-weight: bold; margin-top: 5px; }
+        button.add-btn { background: #0088cc; color: white; border: none; border-radius: 8px; padding: 8px 15px; cursor: pointer; font-weight: bold; }
+        .order-btn { 
+            position: fixed; bottom: 20px; left: 15px; right: 15px; 
+            background: #28a745; color: white; border: none; border-radius: 12px; 
+            padding: 18px; font-size: 16px; font-weight: bold; 
+            display: none; box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+            z-index: 1000;
+        }
     </style>
 </head>
 <body>
 
-    <h2>Каталог Buy by me</h2>
+    <h2>🛍 Каталог Buy by me</h2>
 
-    <div class="item">
-        <img src="https://via.placeholder.com/60" alt="Товар">
-        <div class="info">
-            <div>Кеды люкс</div>
-            <div class="price">120 €</div>
+    <div class="product-list">
+        <div class="product-card">
+            <div class="product-info">
+                <div class="product-name">Кроссовки Nike Air</div>
+                <div class="product-price">110 €</div>
+            </div>
+            <button class="add-btn" onclick="addToCart('Nike Air', 110)">➕</button>
         </div>
-        <button onclick="addToCart('Кеды люкс', 120)">➕</button>
+
+        <div class="product-card">
+            <div class="product-info">
+                <div class="product-name">Сумка Jacquemus</div>
+                <div class="product-price">450 €</div>
+            </div>
+            <button class="add-btn" onclick="addToCart('Сумка Jacquemus', 450)">➕</button>
+        </div>
     </div>
 
-    <div class="item">
-        <img src="https://via.placeholder.com/60" alt="Товар">
-        <div class="info">
-            <div>Сумка кожа</div>
-            <div class="price">250 €</div>
-        </div>
-        <button onclick="addToCart('Сумка кожа', 250)">➕</button>
-    </div>
-
-    <button id="main-btn" class="cart-btn" onclick="sendOrder()">Оформить заказ</button>
+    <button id="order-button" class="order-btn" onclick="sendOrderData()">Оформить заказ</button>
 
     <script>
+        // Инициализация Telegram WebApp
         let tg = window.Telegram.WebApp;
-        tg.expand(); // Развернуть на весь экран
+        tg.expand(); // Разворачиваем на все окно
 
         let cart = [];
 
         function addToCart(name, price) {
-            cart.push({name, price});
-            document.getElementById('main-btn').style.display = 'block';
-            document.getElementById('main-btn').innerText = `В корзине ${cart.length} тов. — Оформить`;
+            cart.push({ name: name, price: price });
+            
+            // Показываем кнопку оформления
+            let btn = document.getElementById('order-button');
+            btn.style.display = 'block';
+            btn.innerText = `Заказать ${cart.length} тов. на сумму ${cart.reduce((a, b) => a + b.price, 0)} €`;
+            
+            // Можно также использовать MainButton самого Телеграма (опционально)
+            tg.MainButton.text = "Оформить заказ";
+            tg.MainButton.show();
         }
 
-        function sendOrder() {
+        // САМАЯ ВАЖНАЯ ФУНКЦИЯ: ОТПРАВКА ДАННЫХ
+        function sendOrderData() {
             if (cart.length === 0) return;
-            // Отправляем данные в бот
-            tg.sendData(JSON.stringify(cart));
-            tg.close(); // Закрываем витрину после заказа
+
+            // Превращаем массив корзины в строку JSON
+            let dataToSend = JSON.stringify(cart);
+
+            // Отправляем данные боту (метод sendData работает только если WebApp открыт через KeyboardButton)
+            tg.sendData(dataToSend);
+
+            // Закрываем WebApp
+            tg.close();
         }
+
+        // Если используем встроенную MainButton Телеграма
+        tg.onEvent('mainButtonClicked', function(){
+            sendOrderData();
+        });
     </script>
 </body>
 </html>
