@@ -7,22 +7,49 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body { font-family: -apple-system, sans-serif; background: #f4f4f7; padding: 15px; margin: 0; color: #333; }
-        .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .price { color: #0088cc; font-weight: bold; }
-        .btn-add { background: #0088cc; color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; }
+        .card { 
+            background: white; border-radius: 12px; padding: 15px; margin-bottom: 12px; 
+            display: flex; align-items: center; /* Выравнивание элементов по центру вертикали */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
+        }
+        .product-image {
+            width: 80px; /* Размер изображения */
+            height: 80px;
+            border-radius: 8px; /* Скругление углов */
+            object-fit: cover; /* Обрезка изображения, чтобы оно заполняло контейнер */
+            margin-right: 15px; /* Отступ справа от изображения */
+        }
+        .product-details {
+            flex-grow: 1; /* Детали займут все доступное пространство */
+        }
+        .name { font-weight: bold; font-size: 16px; }
+        .price { color: #0088cc; font-weight: bold; margin-top: 4px; }
+        .btn-add { background: #0088cc; color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        
         #order-form { display: none; background: white; padding: 15px; border-radius: 12px; margin-top: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        h3 { font-size: 18px; color: #555; margin-bottom: 15px; }
         input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-        .submit-btn { width: 100%; background: #28a745; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; font-size: 16px; margin-top: 10px; }
+        .submit-btn { width: 100%; background: #28a745; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; font-size: 16px; margin-top: 10px; cursor: pointer; }
     </style>
 </head>
 <body>
     <h2>🛍 Каталог</h2>
+
     <div class="card">
-        <div><div>Nike Air Max</div><div class="price">120 €</div></div>
+        <img src="https://via.placeholder.com/80x80/0088cc/FFFFFF?text=NIKE" alt="Nike Air Max" class="product-image">
+        <div class="product-details">
+            <div class="name">Nike Air Max</div>
+            <div class="price">120 €</div>
+        </div>
         <button class="btn-add" onclick="addItem('Nike Air Max', 120)">➕ Добавить</button>
     </div>
+
     <div class="card">
-        <div><div>Yeezy Boost</div><div class="price">250 €</div></div>
+        <img src="https://via.placeholder.com/80x80/FFD700/000000?text=YEEZY" alt="Yeezy Boost" class="product-image">
+        <div class="product-details">
+            <div class="name">Yeezy Boost</div>
+            <div class="price">250 €</div>
+        </div>
         <button class="btn-add" onclick="addItem('Yeezy Boost', 250)">➕ Добавить</button>
     </div>
 
